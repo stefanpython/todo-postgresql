@@ -8,7 +8,7 @@ export default function Home() {
         <div className="bg-white rounded-lg shadow">
           <div className="px-4 py-5 sm:p-6">
             <h1 className="text-2xl font-bold text-gray-900 text-center mb-8">
-              Todo List
+              Todo List PostgreSQL, Prisma + Docker
             </h1>
             <TodoForm />
             <div className="mt-8">
