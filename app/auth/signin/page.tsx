@@ -5,6 +5,7 @@ import type React from "react";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SignIn() {
   const router = useRouter();
@@ -102,18 +103,18 @@ export default function SignIn() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="bg-white px-2 text-gray-500">
-                Or continue with
+                Or register new account
               </span>
             </div>
           </div>
 
-          <div className="mt-6">
-            <button
-              onClick={() => signIn("github", { callbackUrl: "/" })}
-              className="group relative flex w-full justify-center rounded-md bg-gray-800 py-2 px-3 text-sm font-semibold text-white hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800"
+          <div className="mt-6 flex justify-center">
+            <Link
+              href="/auth/signin"
+              className="group relative flex w-full justify-center rounded-md bg-yellow-600 py-2 px-3 text-sm font-semibold text-white hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              GitHub
-            </button>
+              Sign up
+            </Link>
           </div>
         </div>
       </div>
