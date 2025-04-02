@@ -1,64 +1,85 @@
 "use client";
 
-import { useTodo } from "@/contexts/TodoContext";
-import { Loader2, Trash2, CheckCircle, Circle } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export function TodoList() {
-  const { todos, isLoading, error, updateTodo, deleteTodo } = useTodo();
+interface Todo {
+  id: string;
+  title: string;
+  completed: boolean;
+}
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center p-8">
-        <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
-      </div>
-    );
-  }
+interface TodoListProps {
+  initialTodos: Todo[];
+}
 
-  if (error) {
-    return <div className="text-center p-8 text-red-500">{error}</div>;
-  }
+export function TodoList({ initialTodos }: TodoListProps) {
+  const [todos, setTodos] = useState(initialTodos);
+  const router = useRouter();
 
-  if (todos.length === 0) {
-    return (
-      <div className="text-center p-8 text-gray-500">
-        No todos yet. Add one above!
-      </div>
-    );
-  }
+  const toggleComplete = async (id: string, completed: boolean) => {
+    try {
+      await fetch(`/api/todos/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ completed: !completed }),
+      });
+
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        )
+      );
+      router.refresh();
+    } catch (error) {
+      console.error("Error updating todo:", error);
+    }
+  };
+
+  const deleteTodo = async (id: string) => {
+    try {
+      await fetch(`/api/todos/${id}`, {
+        method: "DELETE",
+      });
+
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+      router.refresh();
+    } catch (error) {
+      console.error("Error deleting todo:", error);
+    }
+  };
 
   return (
-    <ul className="divide-y divide-gray-100">
+    <ul>
       {todos.map((todo) => (
         <li
           key={todo.id}
-          className="flex items-center justify-between gap-x-6 py-5"
+          className="flex items-center justify-between py-2 border-b border-gray-200"
         >
-          <div className="flex items-center gap-x-4">
-            <button
-              onClick={() =>
-                updateTodo(todo.id, { completed: !todo.completed })
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id={`todo-${todo.id}`}
+              className="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              checked={todo.completed}
+              onChange={() => toggleComplete(todo.id, todo.completed)}
+            />
+            <label
+              htmlFor={`todo-${todo.id}`}
+              className={
+                todo.completed ? "line-through text-gray-500" : "text-gray-700"
               }
-              className="flex items-center"
-            >
-              {todo.completed ? (
-                <CheckCircle className="h-5 w-5 text-green-500" />
-              ) : (
-                <Circle className="h-5 w-5 text-gray-400" />
-              )}
-            </button>
-            <span
-              className={`text-sm font-medium leading-6 ${
-                todo.completed ? "text-gray-400 line-through" : "text-gray-900"
-              }`}
             >
               {todo.title}
-            </span>
+            </label>
           </div>
           <button
             onClick={() => deleteTodo(todo.id)}
-            className="text-gray-400 hover:text-red-500"
+            className="text-red-500 hover:text-red-700 focus:outline-none"
           >
-            <Trash2 className="h-5 w-5" />
+            Delete
           </button>
         </li>
       ))}
