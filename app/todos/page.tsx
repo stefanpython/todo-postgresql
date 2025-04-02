@@ -23,7 +23,9 @@ export default async function TodosPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Your Todos</h1>
+      <h1 className="text-2xl font-bold mb-6 flex justify-center pt-8">
+        Your Todos
+      </h1>
       <TodoForm />
       <TodoList initialTodos={todos} />
     </div>

@@ -64,9 +64,9 @@ export function TodoList({ initialTodos }: TodoListProps) {
   }
 
   return (
-    <ul className="divide-y divide-gray-200">
+    <ul className="divide-y divide-gray-200 flex  flex-col max-w-[50em] justify-center mx-auto px-4">
       {todos.map((todo) => (
-        <li key={todo.id} className="py-4 flex items-center justify-between">
+        <li key={todo.id} className="py-4 flex items-center justify-between ">
           <div className="flex items-center">
             <input
               type="checkbox"

@@ -48,13 +48,13 @@ export function TodoForm() {
 
   return (
     <form onSubmit={handleSubmit} className="mb-6 flex justify-center">
-      <div className="flex gap-2">
+      <div className="flex gap-2  max-w-[50em] mx-auto">
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Add a new todo..."
-          className="flex-1 rounded-md border-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 max-w-[150em]"
+          className="flex-1 rounded-md border-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 md:min-w-[50em]"
         />
         <button
           type="submit"
