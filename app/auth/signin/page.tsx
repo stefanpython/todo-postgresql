@@ -110,7 +110,7 @@ export default function SignIn() {
 
           <div className="mt-6 flex justify-center">
             <Link
-              href="/auth/signin"
+              href="/auth/signup"
               className="group relative flex w-full justify-center rounded-md bg-yellow-600 py-2 px-3 text-sm font-semibold text-white hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
               Sign up
