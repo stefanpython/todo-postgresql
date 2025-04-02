@@ -1,40 +1,66 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import type { CreateTodoInput } from "@/types/todo";
+import { getServerSession } from "next-auth";
+import { prisma } from "@/lib/prisma";
+import { authOptions } from "../auth/[...nextauth]/route";
 
+// GET all todos for the authenticated user
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const todos = await prisma.todo.findMany({
-      orderBy: { createdAt: "desc" },
+      where: {
+        userId: (session.user as { id: string }).id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
+
     return NextResponse.json(todos);
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching todos:", error);
     return NextResponse.json(
-      { error: "Failed to fetch todos" },
+      { message: "Something went wrong" },
       { status: 500 }
     );
   }
 }
 
+// POST a new todo
 export async function POST(request: Request) {
   try {
-    const json = await request.json();
-    const { title } = json as CreateTodoInput;
+    const session = await getServerSession(authOptions);
 
-    if (!title?.trim()) {
-      return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    if (!session || !session.user) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const { title } = await request.json();
+
+    if (!title) {
+      return NextResponse.json(
+        { message: "Title is required" },
+        { status: 400 }
+      );
     }
 
     const todo = await prisma.todo.create({
-      data: { title },
+      data: {
+        title,
+        userId: (session.user as { id: string }).id,
+      },
     });
 
     return NextResponse.json(todo, { status: 201 });
   } catch (error) {
-    console.error(error);
+    console.error("Error creating todo:", error);
     return NextResponse.json(
-      { error: "Failed to create todo" },
+      { message: "Something went wrong" },
       { status: 500 }
     );
   }
