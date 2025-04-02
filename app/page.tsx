@@ -1,22 +1,45 @@
-import { TodoForm } from "@/components/TodoForm";
-import { TodoList } from "@/components/TodoList";
+import { getServerSession } from "next-auth";
+import Link from "next/link";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-4 py-5 sm:p-6">
-            <h1 className="text-2xl font-bold text-gray-900 text-center mb-8">
-              Todo List PostgreSQL, Prisma + Docker
-            </h1>
-            <TodoForm />
-            <div className="mt-8">
-              <TodoList />
-            </div>
+    <div className="flex flex-col items-center justify-center py-12">
+      <h1 className="text-4xl font-bold mb-6">Welcome to Todo App</h1>
+
+      {session ? (
+        <div className="text-center">
+          <p className="text-xl mb-6">
+            Hello, {session.user?.name || "User"}! Ready to manage your tasks?
+          </p>
+          <Link
+            href="/todos"
+            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+          >
+            Go to My Todos
+          </Link>
+        </div>
+      ) : (
+        <div className="text-center">
+          <p className="text-xl mb-6">Sign in to start managing your todos</p>
+          <div className="flex gap-4 justify-center">
+            <Link
+              href="/auth/signin"
+              className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/auth/signup"
+              className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-indigo-600 border border-indigo-600 hover:bg-indigo-50"
+            >
+              Sign Up
+            </Link>
           </div>
         </div>
-      </div>
-    </main>
+      )}
+    </div>
   );
 }
