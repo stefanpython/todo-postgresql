@@ -1,41 +1,68 @@
 "use client";
 
+import type React from "react";
+
 import { useState } from "react";
-import { useTodo } from "@/contexts/TodoContext";
-import { Plus } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export function TodoForm() {
   const [title, setTitle] = useState("");
-  const { createTodo } = useTodo();
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!title.trim()) return;
 
     try {
-      await createTodo({ title: title.trim() });
+      const response = await fetch("/api/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create todo");
+      }
+
       setTitle("");
+      router.refresh();
     } catch (error) {
       console.error("Error creating todo:", error);
-      // Error is handled by the context
     }
   };
 
+  if (!session) {
+    return (
+      <div className="rounded-md bg-yellow-50 p-4 my-4">
+        <p className="text-sm text-yellow-700">
+          Please sign in to create todos.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="flex gap-x-4 p-4">
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Add a new todo..."
-        className="flex-1 rounded-lg border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-      />
-      <button
-        type="submit"
-        className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-      >
-        <Plus className="h-5 w-5" />
-      </button>
+    <form onSubmit={handleSubmit} className="mb-6">
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Add a new todo..."
+          className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        />
+        <button
+          type="submit"
+          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+        >
+          Add
+        </button>
+      </div>
     </form>
   );
 }
