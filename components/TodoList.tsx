@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-// import { useRouter } from "next/navigation"
+import { TodoForm } from "./TodoForm";
 
 interface Todo {
   id: string;
@@ -15,12 +15,18 @@ interface TodoListProps {
 
 export function TodoList({ initialTodos }: TodoListProps) {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
-  // const router = useRouter()
+
+  const handleTodoAdded = (newTodo: unknown) => {
+    // Simple check for required properties
+    if (newTodo && typeof newTodo === "object" && "id" in newTodo) {
+      setTodos((prevTodos) => [newTodo as Todo, ...prevTodos]);
+    }
+  };
 
   const toggleTodo = async (id: string, completed: boolean) => {
     try {
       const response = await fetch(`/api/todos/${id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -55,41 +61,46 @@ export function TodoList({ initialTodos }: TodoListProps) {
     }
   };
 
-  if (todos.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-gray-500">No todos yet. Add one above!</p>
-      </div>
-    );
-  }
-
   return (
-    <ul className="divide-y divide-gray-200 flex  flex-col max-w-[50em] justify-center mx-auto px-4">
-      {todos.map((todo) => (
-        <li key={todo.id} className="py-4 flex items-center justify-between ">
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              checked={todo.completed}
-              onChange={(e) => toggleTodo(todo.id, e.target.checked)}
-              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-            />
-            <span
-              className={`ml-3 ${
-                todo.completed ? "line-through text-gray-500" : ""
-              }`}
+    <div>
+      <TodoForm onTodoAdded={handleTodoAdded} />
+
+      {todos.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-gray-500">No todos yet. Add one above!</p>
+        </div>
+      ) : (
+        <ul className="divide-y divide-gray-200 max-w-[50em] mx-auto">
+          {todos.map((todo) => (
+            <li
+              key={todo.id}
+              className="py-4 flex items-center justify-between"
             >
-              {todo.title}
-            </span>
-          </div>
-          <button
-            onClick={() => deleteTodo(todo.id)}
-            className="text-red-600 hover:text-red-800"
-          >
-            Delete
-          </button>
-        </li>
-      ))}
-    </ul>
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={(e) => toggleTodo(todo.id, e.target.checked)}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <span
+                  className={`ml-3 ${
+                    todo.completed ? "line-through text-gray-500" : ""
+                  }`}
+                >
+                  {todo.title}
+                </span>
+              </div>
+              <button
+                onClick={() => deleteTodo(todo.id)}
+                className="text-red-600 hover:text-red-800"
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

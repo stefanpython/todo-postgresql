@@ -1,12 +1,15 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-export function TodoForm() {
+interface TodoFormProps {
+  onTodoAdded?: (newTodo: unknown) => void; // Callback function to update parent component
+}
+
+export function TodoForm({ onTodoAdded }: TodoFormProps) {
   const [title, setTitle] = useState("");
   const { data: session } = useSession();
   const router = useRouter();
@@ -29,8 +32,16 @@ export function TodoForm() {
         throw new Error("Failed to create todo");
       }
 
+      // Get the newly created todo from the response
+      const newTodo = await response.json();
+
+      // Call the callback function with the new todo
+      if (onTodoAdded) {
+        onTodoAdded(newTodo);
+      }
+
       setTitle("");
-      router.refresh();
+      router.refresh(); // Keep this for good measure
     } catch (error) {
       console.error("Error creating todo:", error);
     }
@@ -48,7 +59,7 @@ export function TodoForm() {
 
   return (
     <form onSubmit={handleSubmit} className="mb-6 flex justify-center">
-      <div className="flex gap-2  max-w-[50em] mx-auto">
+      <div className="flex gap-2 max-w-[50em] mx-auto">
         <input
           type="text"
           value={title}
