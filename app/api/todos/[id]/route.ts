@@ -48,22 +48,29 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Await the params to resolve it before using it
+    const { id } = await params; // Ensure params is awaited
+
+    // Get session data (assuming you're using some auth library like next-auth)
     const session = await getServerSession(authOptions);
 
+    // Check if user is authenticated
     if (!session || !session.user) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const todo = await prisma.todo.findUnique({
       where: {
-        id: params.id,
+        id: id, // Use the awaited id
       },
     });
 
+    // If the todo doesn't exist
     if (!todo) {
       return NextResponse.json({ message: "Todo not found" }, { status: 404 });
     }
 
+    // Extract userId from session
     const userId = (session.user as { id: string }).id;
 
     // Check if the todo belongs to the authenticated user
@@ -71,16 +78,21 @@ export async function PATCH(
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
+    // Parse request body (updated data for the todo)
     const data = await request.json();
+
+    // Update the todo with the new data
     const updatedTodo = await prisma.todo.update({
       where: {
-        id: params.id,
+        id: id, // Use the awaited id
       },
       data,
     });
 
+    // Return the updated todo object
     return NextResponse.json(updatedTodo);
   } catch (error) {
+    // Log and handle errors
     console.error("Error updating todo:", error);
     return NextResponse.json(
       { message: "Something went wrong" },
@@ -95,6 +107,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const { id } = await params;
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
@@ -103,7 +117,7 @@ export async function DELETE(
 
     const todo = await prisma.todo.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -120,7 +134,7 @@ export async function DELETE(
 
     await prisma.todo.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
