@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "../auth/[...nextauth]/auth"; // Updated import path
 
 // GET all todos for the authenticated user
 export async function GET() {
@@ -14,7 +14,7 @@ export async function GET() {
 
     const todos = await prisma.todo.findMany({
       where: {
-        userId: (session.user as { id: string }).id,
+        userId: session.user.id,
       },
       orderBy: {
         createdAt: "desc",
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     const todo = await prisma.todo.create({
       data: {
         title,
-        userId: (session.user as { id: string }).id,
+        userId: session.user.id,
       },
     });
 
