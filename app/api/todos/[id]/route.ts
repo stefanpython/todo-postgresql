@@ -43,7 +43,7 @@ export async function GET(
 }
 
 // PATCH (update) a specific todo
-export async function PUT(
+export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
