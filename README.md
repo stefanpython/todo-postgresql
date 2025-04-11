@@ -1,34 +1,101 @@
-## Getting Started
+cat << 'EOF' > README.md
 
-First, run the development server:
+# 📝 Todo App
 
-```bash
-npm run dev s
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+A full-stack **Todo App** built with:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- ⚡ **Next.js** (App Router)
+- 🛡 **TypeScript**
+- 🔐 **NextAuth.js** for authentication
+- 🐘 **PostgreSQL** database (via Docker)
+- 🔧 **Prisma** ORM
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Features
 
-## Learn More
+- 🔐 User registration & login (NextAuth.js)
+- ➕ Add todos
+- ❌ Delete todos
+- ✅ Mark todos as complete
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠 Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Framework:** Next.js (App Router)
+- **Language:** TypeScript
+- **Auth:** NextAuth.js
+- **Database:** PostgreSQL (Docker container)
+- **ORM:** Prisma
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🧪 Getting Started
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 🐳 Prerequisites
+
+- Docker installed
+- Node.js & npm
+
+### ⚙️ Installation
+
+\`\`\`bash
+
+# Clone the repo
+
+git clone https://github.com/stefanpython/todo-postgresql.git
+cd todo-app
+
+# Install dependencies
+
+npm install
+
+# Create environment variables
+
+cp .env.example .env
+
+# Run PostgreSQL via Docker
+
+docker-compose up -d
+
+# Push Prisma schema to DB
+
+npx prisma db push
+
+# Start development server
+
+npm run dev
+\`\`\`
+
+---
+
+## 🔑 Environment Variables
+
+Update your \`.env\` file with the following:
+
+\`\`\`env
+DATABASE_URL="postgresql://postgres:password@localhost:5432/todos"
+NEXTAUTH_SECRET=your_secret_key
+NEXTAUTH_URL=http://localhost:3000
+\`\`\`
+
+---
+
+## 🗃 Database Schema
+
+Define your schema in \`prisma/schema.prisma\`. Includes \`User\` and \`Todo\` models.
+
+---
+
+## 🔐 Authentication
+
+Uses **NextAuth.js** with **Credentials Provider** or OAuth (e.g., GitHub) — your choice.
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome. For major changes, open an issue first.
+
+---
